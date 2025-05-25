@@ -5,7 +5,7 @@ metadata:
   name: kubeos-go-template
   description: An example of a go CI CD enabled K8 template.
   annotations:
-    github.com/project-slug: kubeosx/kubeos-dotnet-template
+    github.com/project-slug: kubeosx/kubeos-go-template
     backstage.io/techdocs-ref: dir:.
   tags:
     - go
