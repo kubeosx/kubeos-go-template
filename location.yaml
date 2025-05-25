@@ -1,0 +1,13 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: kubeos-go-template
+  description: A collection of all Kubeos Initial requirement
+  tags:
+    - location
+    - org-setup
+spec:
+  targets:
+    - ./template.yaml
+    - ./catalog-info.yaml
