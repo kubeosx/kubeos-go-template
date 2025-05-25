@@ -1,8 +1,8 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: ${{values.serviceName}}-vault-sync-config
+  name: ${{values.deployment_name}}-vault-sync-config
   labels:
     kubeos.io/vault-cm: vault-config
 data:
-  app: "${{values.serviceName}}"
+  app: "${{values.deployment_name}}"

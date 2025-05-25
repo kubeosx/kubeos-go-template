@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ${{values.serviceName}}
+  name: ${{values.deployment_name}}
   namespace: default
 spec:
   strategy:
@@ -12,16 +12,16 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ${{values.serviceName}}
+      app: ${{values.deployment_name}}
   template:
     metadata:
       annotations:
-        backstage.io/kubernetes-id: ${{values.serviceName}}
+        backstage.io/kubernetes-id: ${{values.deployment_name}}
         vault.hashicorp.com/agent-inject: 'true'
-        vault.hashicorp.com/role: '${{values.serviceName}}'
-        vault.hashicorp.com/agent-inject-secret-config.txt: 'kubeos/dev/${{values.serviceName}}'
+        vault.hashicorp.com/role: '${{values.deployment_name}}'
+        vault.hashicorp.com/agent-inject-secret-config.txt: 'kubeos/dev/${{values.deployment_name}}'
     spec:
-      serviceAccountName: ${{values.serviceName}}
+      serviceAccountName: ${{values.deployment_name}}
       automountServiceAccountToken: true
       volumes:
         # - name: rw-tmp-volume
@@ -30,7 +30,7 @@ spec:
         - name: tmp-rw-volume
           emptyDir: {}
       containers:
-        - name: ${{values.serviceName}}
+        - name: ${{values.deployment_name}}
           image: ${{values.docker_username}}/${{values.docker_image_name}}:1
           ports:
             - containerPort: 8080

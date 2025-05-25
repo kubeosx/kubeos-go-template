@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name:  ${{values.serviceName}}-ingress
+  name:  ${{values.deployment_name}}-ingress
   annotations:
     nginx.org/mergeable-ingress-type: "master"
     kubernetes.io/ingress.class: nginx
@@ -12,10 +12,10 @@ spec:
   - host: evolution.k8
     http:
       paths:
-      - path: /${{values.serviceName}}
+      - path: /${{values.deployment_name}}
         pathType: Prefix
         backend:
           service:
-            name:  ${{values.serviceName}}
+            name:  ${{values.deployment_name}}
             port:
               number: 8080

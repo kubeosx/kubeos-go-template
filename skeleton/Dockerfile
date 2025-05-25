@@ -5,25 +5,28 @@ FROM golang:1.20 AS builder
 WORKDIR /app
 
 # Copy go mod and sum files
-COPY go.mod go.sum ./
+COPY go.mod ./
+
+# Update the Go version to match the valid format
+RUN sed -i 's/1.24.2/1.20/' go.mod
 
 # Download all dependencies. Dependencies are cached if the go.mod and go.sum files are not changed
 RUN go mod download
 
 # Copy the source from the current directory to the Working Directory inside the container
-COPY . .
+COPY ./cmd .
 
 # Build the Go app
-RUN go build -o ${{values.serviceName}}
+RUN go build -o ${{ values.app_name }}
 
 # Use a minimal image for the final artifact
-FROM debian:bullseye-slim
+FROM golang:1.23-bookworm
 
 # Set the Current Working Directory inside the container
 WORKDIR /root/
 
 # Copy the Pre-built binary file from the previous stage
-COPY --from=builder /app/kubeos-go-template .
+COPY --from=builder /app/${{ values.app_name }} .
 
 # Command to run the executable
-CMD ["./kubeos-go-template"]
+CMD ["./${{ values.app_name }}"]

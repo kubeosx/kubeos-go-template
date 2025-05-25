@@ -2,184 +2,179 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: kubeos-go-template
-  title: Kubeos K8s Jobs built on go.
-  description: Create a Node Job with GitHub Actions workflows, build docker image and deploy to kubernetes
+  title: Kubeos Go Template for Kubernetes Jobs
+  description: Scaffold a Go-based Kubernetes Job with GitHub Actions workflows, Docker image build, and Kubernetes deployment.
   tags:
     - recommended
-    - nodejs
+    - go
+    - kubernetes
 spec:
   owner: sourabh.rustagi
   type: service
   parameters:
-    - title: Provide some simple information
+    - title: Basic Information
       required:
-        - service_name
+        - app_name
         - owner
+        - repo_url
       properties:
-        service_name:
-          title: Name
+        app_name:
+          title: Application Name
           type: string
           description: Unique name of the service.
           ui:field: EntityNamePicker
         description:
-          title: Description
+          title: Application Description
           type: string
-          description: Help others understand what this service is for; optional.
+          description: Brief description of the service (optional).
         owner:
           title: Owner
           type: string
-          description: Owner of the component
+          description: Owner of the component.
           ui:field: OwnerPicker
           ui:options:
             allowedKinds:
               - Group
         system:
-          title: Owner
+          title: System
           type: string
-          description: System of the component
+          description: System to which the component belongs.
           ui:field: EntityPicker
           ui:options:
             catalogFilter:
               - kind: System
-    - title: Repository details
-      required:
-        - repoUrl
-      properties:
-        repoUrl:
-          title: Repository Location
+        repo_url:
+          title: Repository URL
           type: string
+          description: URL of the GitHub repository.
           ui:field: RepoUrlPicker
           ui:options:
             allowedHosts:
               - github.com
-    - title: Provide Docker information
+
+    - title: Docker Configuration
       required:
         - docker_username
         - docker_password
       properties:
         docker_username:
-          title: Name
+          title: Docker Username
           type: string
-          description: Docker user name for login and will be pushed to hub.
-          ui:field: EntityNamePicker
+          description: Docker Hub username for pushing images.
         docker_password:
-          title: Password
+          title: Docker Password
           type: string
-          description: Passwod for Login, will be stored as secrets
+          description: Docker Hub password for authentication.
 
-    - title: Configure Deployments
+    - title: Deployment Configuration
       required:
-        - project_name_in_k8
+        - deployment_name
       properties:
-        deploy_k8:
-          title: deploy to Kuberntes
+        deploy_to_k8s:
+          title: Deploy to Kubernetes
           type: boolean
-        project_name_in_k8:
-          title: Name of Deployment
+          description: Whether to deploy the application to Kubernetes.
+        deployment_name:
+          title: Deployment Name
           type: string
-          description: Name of the Deployment you want to create in kubernetes
+          description: Name of the Kubernetes deployment.
           maxLength: 100
           pattern: '^[a-z0-9]+(-[a-z0-9]+)*$'
 
+
   steps:
-    - id: template
-      name: Fetch Skeleton + Template
+    - id: fetch-template
+      name: Fetch Skeleton and Template
       action: fetch:template
       input:
         url: ./skeleton
         copyWithoutTemplating:
           - .github/workflows/*
         values:
-          serviceName: ${{ parameters.service_name }}
+          app_name: ${{ parameters.app_name }}
           description: ${{ parameters.description }}
-          destination: ${{ parameters.repoUrl | parseRepoUrl }}
+          repo_url: ${{ parameters.repo_url | parseRepoUrl }}
           owner: ${{ parameters.owner }}
           system: ${{ parameters.system }}
           docker_username: ${{ parameters.docker_username }}
-          project_k8_namespace: dev # ket default for this template as a standard to become
-          kustomize_path : ./deploy/k8s/overlays/dev # kepr default for this template as a standar to become
-          project_org : kubeosx # kept default for this template
-          repo_branch: main # kept default for this template
+          k8_namespace: dev
+          kustomize_path: ./deploy/k8s/overlays/dev
+          project_org: kubeosx
+          repo_branch: main
+          deployment_name : ${{ parameters.deployment_name }}
 
-    - id: publish
-      name: Publish
+
+    - id: publish-repo
+      name: Publish Repository
       action: publish:github
       input:
         allowedHosts: ["github.com"]
-        description: This is ${{ parameters.service_name }}
-        repoUrl: ${{ parameters.repoUrl }}
+        description: Repository for ${{ parameters.app_name }}
+        repoUrl: ${{ parameters.repo_url }}
         defaultBranch: main
         repoVisibility: public
         secrets:
-          "DOCKER_USER": ${{ parameters.docker_username }}
-          "DOCKER_PASSWORD" : ${{ parameters.docker_password }}
-          "AppName": ${{ parameters.service_name }}
+          DOCKER_USER: ${{ parameters.docker_username }}
+          DOCKER_PASSWORD: ${{ parameters.docker_password }}
 
-    # Fetch Cloud CLuster Repo, Which is responsible to deploying using FLux
-    - id: fetch-remote
-      name: Fetch Remote kustomization
+    - id: fetch-cluster-repo
+      name: Fetch Kubernetes Cluster Repository
       action: fetch:plain
       input:
         url: https://github.com/kubeosx/kubeos-cluster.git
         targetPath: kubeos
 
-    # Fetch a remote repo for getting template to commit in flux repo.
-    - id: fetch-remote
-      name: Fetch Remote kustomization
+    - id: fetch-autopr-template
+      name: Fetch AutoPR Template
       action: fetch:template
       input:
         url: https://github.com/kubeosx/kubeos-autopr-templates.git
-        path:
         targetPath: kubeos/clusters/dev
         values:
+          app_name: ${{ parameters.app_name }}
           description: ${{ parameters.description }}
-          project_name: ${{ parameters.service_name }}
           owner: ${{ parameters.owner }}
           system: ${{ parameters.system }}
-          destination: ${{ parameters.repoUrl | parseRepoUrl }}
+          repo_url: ${{ parameters.repo_url | parseRepoUrl }}
           docker_username: ${{ parameters.docker_username }}
-          project_k8_namespace: dev # ket default for this template as a standard to become
-          kustomize_path : ./deploy/k8s/overlays/dev # kepr default for this template as a standar to become
-          project_org : kubeosx # kept default for this template
-          repo_branch: main # kept default for this template
+          project_k8_namespace: dev
+          kustomize_path: ./deploy/k8s/overlays/dev
+          project_org: kubeosx
+          repo_branch: main
           http_port: 8080
-          project_name_in_k8: ${{ parameters.project_name_in_k8 }}
+          deployment_name: ${{ parameters.deployment_name }}
 
-          
-    # update the kustomization file 
-    - id: append-file
-      name: Append To File Or Create New
+    - id: update-kustomization
+      name: Update Kustomization File
       action: roadiehq:utils:fs:append
       input:
         path: kubeos/clusters/dev/kustomization.yaml
-        content: '${{ "\n  - "+ parameters.service_name }}/'
+        content: '${{ "\n  - "+ parameters.app_name }}/'
 
-    # PR back the change
-    - id: pr-repo
-      name: PR to repo
+    - id: create-pr
+      name: Create Pull Request
       action: publish:github:pull-request
       input:
         repoUrl: github.com?repo=kubeos-cluster&owner=kubeosx
-        description: This is commiting project ${{ parameters.service_name }} for deployment
-        branchName: feature/Onboarding-${{ parameters.service_name }}
+        description: Add deployment configuration for ${{ parameters.app_name }}
+        branchName: feature/onboarding-${{ parameters.app_name }}
         targetBranchName: main
-        gitCommitMessage: Add New Deployment Config
-        title: PR for new app :${{ parameters.service_name }}
+        gitCommitMessage: Add new deployment configuration
+        title: PR for new app: ${{ parameters.app_name }}
         sourcePath: kubeos/clusters/dev
         targetPath: clusters/dev
-        project_name_in_k8: ${{ parameters.project_name_in_k8 }}
 
-    - id: register
-      name: Register
+    - id: register-catalog
+      name: Register in Backstage Catalog
       action: catalog:register
       input:
-        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
-        catalogInfoPath: "/catalog-info.yaml"
+        repoContentsUrl: ${{ steps.publish-repo.output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
 
   output:
     links:
       - title: Repository
-        url: ${{ steps.publish.output.remoteUrl }}
-      - title: Open in catalog
+        url: ${{ steps.publish-repo.output.remoteUrl }}
+      - title: Open in Catalog
         icon: catalog
-        entityRef: ${{ steps.register.output.entityRef }}
+        entityRef: ${{ steps.register-catalog.output.entityRef }}

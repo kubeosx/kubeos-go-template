@@ -2,13 +2,13 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: ${{ values.serviceName }}
+  name: ${{ values.app_name }}
   description: An example of a go CI CD enabled K8 template.
   annotations:
     github.com/project-slug: ${{values.destination.owner + "/" + values.destination.repo}}
     backstage.io/techdocs-ref: dir:.
-    backstage.io/kubernetes-id: ${{values.serviceName | dump}}
-    backstage.io/kubernetes-namespace: ${{values.serviceName | dump}}
+    backstage.io/kubernetes-id: ${{values.app_name | dump}}
+    backstage.io/kubernetes-namespace: ${{values.app_name | dump}}
     prometheus.io/alert: all
   tags:
     - go

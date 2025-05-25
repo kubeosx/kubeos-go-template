@@ -7,7 +7,7 @@ import (
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello from ${{ values.serviceName }}")
+		fmt.Fprintf(w, "Hello from ${{ values.app_name }}")
 	})
 
 	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
@@ -15,6 +15,6 @@ func main() {
 		w.Write([]byte("ok"))
 	})
 
-	fmt.Println("Server is running on port 8080...")
-	http.ListenAndServe(":8080", nil)
+	fmt.Println("Server is running on port 8081...")
+	http.ListenAndServe(":8081", nil)
 }
