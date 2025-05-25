@@ -2,7 +2,7 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: kubeos-go-template
-  title: Kubeos Go Template for Kubernetes Jobs
+  title: Kubeos Go Template for Kubernetes API
   description: Scaffold a Go-based Kubernetes Job with GitHub Actions workflows, Docker image build, and Kubernetes deployment.
   tags:
     - recommended
@@ -116,6 +116,9 @@ spec:
         secrets:
           DOCKER_USER: ${{ parameters.docker_username }}
           DOCKER_PASSWORD: ${{ parameters.docker_password }}
+        repoVariables:
+          APP_NAME: ${{ parameters.app_name }}
+          CONTAINER_IMAGE_NAME: ${{ parameters.app_name }}
 
     - id: fetch-cluster-repo
       name: Fetch Kubernetes Cluster Repository
