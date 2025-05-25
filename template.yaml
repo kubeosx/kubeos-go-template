@@ -67,6 +67,20 @@ spec:
           type: string
           description: Passwod for Login, will be stored as secrets
 
+    - title: Configure Deployments
+      required:
+        - project_name_in_k8
+      properties:
+        deploy_k8:
+          title: deploy to Kuberntes
+          type: boolean
+        project_name_in_k8:
+          title: Name of Deployment
+          type: string
+          description: Name of the Deployment you want to create in kubernetes
+          maxLength: 100
+          pattern: '^[a-z0-9]+(-[a-z0-9]+)*$'
+
   steps:
     - id: template
       name: Fetch Skeleton + Template
@@ -129,6 +143,7 @@ spec:
           project_org : kubeosx # kept default for this template
           repo_branch: main # kept default for this template
           http_port: 8080
+          project_name_in_k8: ${{ parameters.project_name_in_k8 }}
 
           
     # update the kustomization file 
@@ -152,6 +167,7 @@ spec:
         title: PR for new app :${{ parameters.service_name }}
         sourcePath: kubeos/clusters/dev
         targetPath: clusters/dev
+        project_name_in_k8: ${{ parameters.project_name_in_k8 }}
 
     - id: register
       name: Register
