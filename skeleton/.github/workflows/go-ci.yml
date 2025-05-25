@@ -1,4 +1,4 @@
-name: .NET > Build > Test > OpenApi > Docker
+name: GO > Build > Test > Docker
 
 on:
   push:
