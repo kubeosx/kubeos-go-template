@@ -1,6 +1,6 @@
-# kubeos-go-template
+# ${{ values.serviceName }}
 
-This is a basic Go project that serves an API.
+This is a basic Go project ${{ values.serviceName }} that serves an API.
 
 ## Getting Started
 
@@ -10,13 +10,13 @@ This is a basic Go project that serves an API.
 ### Building the Project
 Run the following command to build the project:
 ```bash
-go build -o kubeos-go-template
+go build -o ${{ values.serviceName }}
 ```
 
 ### Running the Project
 Run the following command to start the server:
 ```bash
-./kubeos-go-template
+./${{ values.serviceName }}
 ```
 
 The server will be running on `http://localhost:8080`.

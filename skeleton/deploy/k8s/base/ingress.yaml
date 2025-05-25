@@ -1,17 +1,21 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: kubeosx-ingress
-  namespace: default
+  name:  ${{values.project_name_in_k8}}-ingress
+  annotations:
+    nginx.org/mergeable-ingress-type: "master"
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    
 spec:
   rules:
-    - host: kubeosx.local
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: kubeosx-service
-                port:
-                  number: 8080
+  - host: evolution.k8
+    http:
+      paths:
+      - path: /${{values.project_name_in_k8}}
+        pathType: Prefix
+        backend:
+          service:
+            name:  ${{values.project_name_in_k8}}
+            port:
+              number: 8080

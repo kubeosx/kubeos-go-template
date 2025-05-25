@@ -1,7 +1,8 @@
-apiVersion: v1
 kind: ConfigMap
+apiVersion: v1
 metadata:
-  name: kubeosx-configmap
-  namespace: default
+  name: ${{values.project_name_in_k8}}-vault-sync-config
+  labels:
+    kubeos.io/vault-cm: vault-config
 data:
-  example-config: example-value
+  app: "${{values.project_name_in_k8}}"

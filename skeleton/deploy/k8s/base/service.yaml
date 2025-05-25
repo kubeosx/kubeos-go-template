@@ -1,12 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: kubeosx-service
-  namespace: default
+  name: ${{values.project_name_in_k8}}
+  labels:
+    metrics-scraper: prometheus
 spec:
   selector:
-    app: kubeosx
+    app: ${{values.project_name_in_k8}}
   ports:
-    - protocol: TCP
+    - name: http
       port: 8080
       targetPort: 8080
