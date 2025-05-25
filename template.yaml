@@ -160,7 +160,7 @@ spec:
         branchName: feature/onboarding-${{ parameters.app_name }}
         targetBranchName: main
         gitCommitMessage: Add new deployment configuration
-        title: PR for new app: ${{ parameters.app_name }}
+        title: PR for new app ${{ parameters.app_name }}
         sourcePath: kubeos/clusters/dev
         targetPath: clusters/dev
 
