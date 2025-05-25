@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ${{values.project_name_in_k8}}
+  name: ${{values.serviceName}}
   labels:
     metrics-scraper: prometheus
 spec:
   selector:
-    app: ${{values.project_name_in_k8}}
+    app: ${{values.serviceName}}
   ports:
     - name: http
       port: 8080

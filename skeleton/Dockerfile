@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build -o kubeos-go-template
+RUN go build -o ${{values.serviceName}}
 
 # Use a minimal image for the final artifact
 FROM debian:bullseye-slim
