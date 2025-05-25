@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubeosx-deployment
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kubeosx
+  template:
+    metadata:
+      labels:
+        app: kubeosx
+    spec:
+      serviceAccountName: kubeosx-service-account
+      containers:
+        - name: kubeosx-container
+          image: kubeosx:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: EXAMPLE_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: kubeosx-secret
+                  key: example-key

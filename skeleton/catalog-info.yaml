@@ -1,0 +1,25 @@
+
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: kubeos-go-template
+  description: An example of a go CI CD enabled K8 template.
+  annotations:
+    github.com/project-slug: kubeosx/kubeos-dotnet-template
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - go
+    - template
+  links:
+    - url: https://github.com/kubeosx/kubeos-go-template
+      icon: web
+      title: Github
+    - url: https://github.com/kubeosx/kubeos-go-template/issues
+      icon: web
+      title: Github Issues
+spec:
+  type: service
+  owner: platform-engineering-team
+  lifecycle: experimental
+  dependsOn: ['component:kubeos', component:kubeos-cluster, component:kubeos-baseline]
+  system: kubeos-idp
